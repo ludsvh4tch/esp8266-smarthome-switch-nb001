@@ -183,7 +183,7 @@
       </div>
     </div>
 
-    <button id="allOffBtn">All OFF</button>
+    <button id="allOffBtn">Toggle All Relays</button>
     <button id="logoutBtn">Logout</button>
   </div>
 
@@ -273,9 +273,38 @@
         };
       });
 
-      document.getElementById("allOffBtn").onclick = () => {
-        relays.forEach(relay => {
-          db.ref("/" + relay.path).set(false);
+          document.getElementById("allOffBtn").onclick = () => {
+        // Ambil semua janji (promise) untuk mendapatkan status setiap relay
+        const promises = relays.map(relay => db.ref("/" + relay.path).get());
+
+        // Tunggu hingga semua status relay didapatkan
+        Promise.all(promises)
+            .then(snapshots => {
+                let allAreOff = true;
+                // Periksa apakah ada setidaknya satu relay yang ON
+                for (const snap of snapshots) {
+                    if (snap.val() === true) {
+                        allAreOff = false;
+                        break; // Jika ditemukan satu yang ON, tidak perlu memeriksa yang lain
+                    }
+                }
+
+                // Tentukan status baru untuk semua relay:
+                // Jika semua tadinya OFF, maka status baru adalah ON
+                // Jika ada yang ON, maka status baru adalah OFF
+                const newState = allAreOff ? true : false;
+
+                // Setel semua relay ke status baru
+                relays.forEach(relay => {
+                    db.ref("/" + relay.path).set(newState);
+                });
+            })
+            .catch(error => {
+                console.error("Gagal mengubah status semua relay:", error);
+                alert("Gagal mengubah status semua relay: " + error.message);
+            });
+    };
+
         });
       };
     }
@@ -296,4 +325,5 @@
 </body>
 
 </html>
+
 
