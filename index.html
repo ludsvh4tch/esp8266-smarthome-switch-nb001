@@ -46,7 +46,7 @@
       background-color: blue;
       cursor: pointer;
       font-size: 16px;
-	  width: 90%;
+      width: 90%;
       transition: opacity 0.3s ease;
     }
     .relay-card button:hover {
@@ -199,14 +199,14 @@
   <script>
     // Firebase config
     const firebaseConfig = {
-  apiKey: "AIzaSyAnzE2bG5lEm2YdKrW3js2JgyE7E3TJQLU",
-  authDomain: "esp8266-smarthome-switch-nb001.firebaseapp.com",
-  databaseURL: "https://esp8266-smarthome-switch-nb001-default-rtdb.firebaseio.com",
-  projectId: "esp8266-smarthome-switch-nb001",
-  storageBucket: "esp8266-smarthome-switch-nb001.firebasestorage.app",
-  messagingSenderId: "313795751530",
-  appId: "1:313795751530:web:9a7c6344c4b71ff6fc6413"
-};
+      apiKey: "AIzaSyAnzE2bG5lEm2YdKrW3js2JgyE7E3TJQLU",
+      authDomain: "esp8266-smarthome-switch-nb001.firebaseapp.com",
+      databaseURL: "https://esp8266-smarthome-switch-nb001-default-rtdb.firebaseio.com",
+      projectId: "esp8266-smarthome-switch-nb001",
+      storageBucket: "esp8266-smarthome-switch-nb001.firebasestorage.app",
+      messagingSenderId: "313795751530",
+      appId: "1:313795751530:web:9a7c6344c4b71ff6fc6413"
+    };
 
     firebase.initializeApp(firebaseConfig);
 
@@ -250,7 +250,7 @@
 
       const relays = [
         { id: 1, path: "relay1" },
-        { id: 2, path: "relay2" },
+        { id: 2, path: "relay2" }, // Perbaikan di sini: 'path: 3, path: "relay3"' menjadi 'path: "relay2"'
         { id: 3, path: "relay3" },
         { id: 4, path: "relay4" },
       ];
@@ -273,7 +273,8 @@
         };
       });
 
-          document.getElementById("allOffBtn").onclick = () => {
+      // Event listener untuk tombol "Toggle All Relays"
+      document.getElementById("allOffBtn").onclick = () => {
         // Ambil semua janji (promise) untuk mendapatkan status setiap relay
         const promises = relays.map(relay => db.ref("/" + relay.path).get());
 
@@ -303,11 +304,8 @@
                 console.error("Gagal mengubah status semua relay:", error);
                 alert("Gagal mengubah status semua relay: " + error.message);
             });
-    };
-
-        });
-      };
-    }
+      }; // Ini adalah penutup yang benar untuk `document.getElementById("allOffBtn").onclick`
+    } // Ini adalah penutup yang benar untuk fungsi `startRelayControl()`
 
     document.getElementById("logoutBtn").onclick = () => {
       firebase.auth().signOut()
@@ -325,5 +323,3 @@
 </body>
 
 </html>
-
-
